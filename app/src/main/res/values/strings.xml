@@ -1,0 +1,22 @@
+<resources>
+
+    <string-array name="gender">
+        <item>MALE</item>
+        <item>FEMALE</item>
+    </string-array>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="where_are_you_going_to">Where are you going to?</string>
+    <string name="upload_an_image">Upload an image</string>
+    <string name="ready">Ready!</string>
+    <string name="add_members">Add Members</string>
+    <string name="add_a_trip">Add A Trip</string>
+    <string name="select_picture">Select Picture</string>
+    <string name="select_friends_to_add">Select Friends To Add</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="no_friends_to_add">You have no friends to add.</string>
+    <string name="required">Required</string>
+    <string name="no_location_selected">No location selected.</string>
+    <string name="cannot_remove_all_locations">You cannot remove all locations.</string>
+</resources>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardElevation="@dimen/card_elevation"
+        card_view:layout_margin="4dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground">
+
+            <ImageView
+                android:id="@+id/person_photo1"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_marginEnd="16dp"
+                app:srcCompat="@drawable/selfprofile" />
+
+            <TextView
+                android:id="@+id/person_fname1"
+                android:layout_width="150dp"
+                android:layout_height="20dp"
+                android:layout_alignParentTop="true"
+                android:layout_toEndOf="@+id/person_photo1"
+                android:text="First Name"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/person_lname1"
+                android:layout_width="150dp"
+                android:layout_height="20dp"
+                android:layout_alignBottom="@+id/person_photo1"
+                android:layout_toEndOf="@+id/person_photo1"
+                android:text="Last Name" />
+
+            <ImageView
+                android:id="@+id/imageViewClick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="16dp"
+                app:srcCompat="@drawable/addfriend" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>
