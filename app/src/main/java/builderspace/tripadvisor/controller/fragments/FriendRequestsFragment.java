@@ -37,6 +37,9 @@ public class FriendRequestsFragment extends Fragment {
     private ArrayList<User> allUsers = new ArrayList<>();
     private ArrayList<User> notFriends = new ArrayList<>();
 
+    private ArrayList<User> friends = new ArrayList<>();
+
+
     public FriendRequestsFragment() {
         // Required empty public constructor
     }
@@ -51,11 +54,6 @@ public class FriendRequestsFragment extends Fragment {
 
         user = FirebaseAuth.getInstance().getCurrentUser();
 
-        RecyclerView recyclerViewMyFriendRequests = view.findViewById(R.id.recyclerViewMyFriendRequests);
-        RecyclerFriendRequestAdapter recyclerFriendRequestAdapter = new RecyclerFriendRequestAdapter(friendRequests, currentUser);
-        recyclerViewMyFriendRequests.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewMyFriendRequests.setAdapter(recyclerFriendRequestAdapter);
-
 
         DatabaseReference muid = databaseReference.child("USER");
         muid.addValueEventListener(new ValueEventListener() {
@@ -63,16 +61,26 @@ public class FriendRequestsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 allUsers.clear();
+                friends.clear();
                 friendRequests.clear();
-
+                notFriends.clear();
 
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    if (currentUser == null && user.getEmail().equals((d.getValue(User.class)).getEmail())) {
+                    if (user.getEmail().equals((d.getValue(User.class)).getEmail())) {
                         currentUser = d.getValue(User.class);
                     }
                     allUsers.add(d.getValue(User.class));
                 }
 
+                ArrayList<String> friendsString = currentUser.getFriends();
+                for (String friendString : friendsString) {
+                    for (User user : allUsers) {
+                        if (friendString.equals(user.getKey())) {
+                            friends.add(user);
+                            break;
+                        }
+                    }
+                }
 
                 ArrayList<String> friendRequestsString = currentUser.getFriendRequests();
                 for (String friendRequestString : friendRequestsString) {
@@ -84,11 +92,43 @@ public class FriendRequestsFragment extends Fragment {
                     }
                 }
 
+                notFriends = (ArrayList<User>) allUsers.clone();
+                for (User notFriend : notFriends) {
+                    if (currentUser.getEmail().equals(notFriend.getEmail())) {
+                        notFriends.remove(notFriend);
+                        break;
+                    }
+                }
+
+                for (User friend : friends) {
+                    for (User notFriend : notFriends) {
+                        if (friend.getEmail().equals(notFriend.getEmail())) {
+                            notFriends.remove(notFriend);
+                            break;
+                        }
+                    }
+                }
+
+                ArrayList<User> usersToRemove = new ArrayList<User>();
+                for (User friend : notFriends) {
+                    if (friend.getFriendRequests().contains(currentUser.getKey())) {
+                        usersToRemove.add(friend);
+                    }
+                }
+                for (User userToRemove : usersToRemove) {
+                    notFriends.remove(userToRemove);
+                }
+
                 for (User friendRequest : friendRequests) {
                     if (notFriends.contains(friendRequest)) {
                         notFriends.remove(friendRequest);
                     }
                 }
+
+                RecyclerView recyclerViewMyFriendRequests = view.findViewById(R.id.recyclerViewMyFriendRequests);
+                RecyclerFriendRequestAdapter recyclerFriendRequestAdapter = new RecyclerFriendRequestAdapter(friendRequests, currentUser);
+                recyclerViewMyFriendRequests.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerViewMyFriendRequests.setAdapter(recyclerFriendRequestAdapter);
 
             }
 

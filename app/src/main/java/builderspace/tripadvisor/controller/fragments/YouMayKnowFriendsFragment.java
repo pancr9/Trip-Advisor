@@ -35,8 +35,12 @@ public class YouMayKnowFriendsFragment extends Fragment {
     private User currentUser;
     private ArrayList<User> notFriends = new ArrayList<>();
     private ArrayList<User> friends = new ArrayList<>();
-
+    private ArrayList<User> friendRequests = new ArrayList<>();
     private ArrayList<User> allUsers = new ArrayList<>();
+
+    private RecyclerView recyclerViewPeopleYouMayKnow;
+    private View view;
+    private RecyclerPeopleYouMayKnowAdapter recyclerPeopleYouMayKnowAdapter;
 
     public YouMayKnowFriendsFragment() {
         // Required empty public constructor
@@ -47,13 +51,8 @@ public class YouMayKnowFriendsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_you_may_know_friends, container, false);
+        view = inflater.inflate(R.layout.fragment_you_may_know_friends, container, false);
         user = FirebaseAuth.getInstance().getCurrentUser();
-
-        RecyclerView recyclerViewPeopleYouMayKnow = view.findViewById(R.id.recyclerViewPeopleYouMayKnow);
-        RecyclerPeopleYouMayKnowAdapter recyclerPeopleYouMayKnowAdapter = new RecyclerPeopleYouMayKnowAdapter(notFriends, currentUser);
-        recyclerViewPeopleYouMayKnow.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerViewPeopleYouMayKnow.setAdapter(recyclerPeopleYouMayKnowAdapter);
 
         DatabaseReference muid = databaseReference.child("USER");
         muid.addValueEventListener(new ValueEventListener() {
@@ -61,11 +60,12 @@ public class YouMayKnowFriendsFragment extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 allUsers.clear();
-                notFriends.clear();
                 friends.clear();
+                friendRequests.clear();
+                notFriends.clear();
 
                 for (DataSnapshot d : dataSnapshot.getChildren()) {
-                    if (currentUser == null && user.getEmail().equals((d.getValue(User.class)).getEmail())) {
+                    if (user.getEmail().equals((d.getValue(User.class)).getEmail())) {
                         currentUser = d.getValue(User.class);
                     }
                     allUsers.add(d.getValue(User.class));
@@ -76,6 +76,16 @@ public class YouMayKnowFriendsFragment extends Fragment {
                     for (User user : allUsers) {
                         if (friendString.equals(user.getKey())) {
                             friends.add(user);
+                            break;
+                        }
+                    }
+                }
+
+                ArrayList<String> friendRequestsString = currentUser.getFriendRequests();
+                for (String friendRequestString : friendRequestsString) {
+                    for (User user : allUsers) {
+                        if (friendRequestString.equals(user.getKey())) {
+                            friendRequests.add(user);
                             break;
                         }
                     }
@@ -98,17 +108,26 @@ public class YouMayKnowFriendsFragment extends Fragment {
                     }
                 }
 
-                ArrayList<User> usersToRemove = new ArrayList<>();
+                ArrayList<User> usersToRemove = new ArrayList<User>();
                 for (User friend : notFriends) {
                     if (friend.getFriendRequests().contains(currentUser.getKey())) {
-                        notFriends.remove(friend);
                         usersToRemove.add(friend);
                     }
                 }
-
                 for (User userToRemove : usersToRemove) {
                     notFriends.remove(userToRemove);
                 }
+
+                for (User friendRequest : friendRequests) {
+                    if (notFriends.contains(friendRequest)) {
+                        notFriends.remove(friendRequest);
+                    }
+                }
+
+                recyclerViewPeopleYouMayKnow = view.findViewById(R.id.recyclerViewPeopleYouMayKnow);
+                recyclerPeopleYouMayKnowAdapter = new RecyclerPeopleYouMayKnowAdapter(notFriends, currentUser);
+                recyclerViewPeopleYouMayKnow.setLayoutManager(new LinearLayoutManager(getContext()));
+                recyclerViewPeopleYouMayKnow.setAdapter(recyclerPeopleYouMayKnowAdapter);
 
             }
 
