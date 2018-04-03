@@ -1,4 +1,4 @@
-# Trip-Advisor
+# Trip Advisor
 A trip planning application
 
 * Sign In, Sign Up feature
